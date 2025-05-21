@@ -16,9 +16,17 @@ export class TransactionController {
   getTransactions(
     @Query('walletId') walletId: string,
     @Query('skip') skip = '0',
-    @Query('limit') limit = '10'
+    @Query('limit') limit = '10',
+    @Query('sort') sort = 'createdAt',
+    @Query('order') order: 'ASC' | 'DESC' = 'DESC'
   ) {
-    return this.transactionService.getTransactions(walletId, parseInt(skip), parseInt(limit));
+    return this.transactionService.getTransactions(
+      walletId,
+      parseInt(skip),
+      parseInt(limit),
+      sort,
+      order
+    );
   }
 
   @Get('transactions/export')

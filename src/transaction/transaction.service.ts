@@ -143,17 +143,35 @@ export class TransactionService {
     sort = 'createdAt',
     order: 'ASC' | 'DESC' = 'DESC'
   ) {
-    const [transactions, total] = await this.transactionRepo.findAndCount({
-      where: { wallet: { id: walletId } },
-      skip,
-      take: limit,
-      order: { [sort]: order }
-    });
+    try {
+      // Validate sort field to prevent SQL injection
+      const allowedSortFields = ['createdAt', 'amount'];
+      const sortField = allowedSortFields.includes(sort) ? sort : 'createdAt';
 
-    return {
-      transactions,
-      pagination: { total, skip, limit }
-    };
+      const [transactions, total] = await this.transactionRepo.findAndCount({
+        where: { wallet: { id: walletId } },
+        skip,
+        take: limit,
+        order: { [sortField]: order },
+        relations: ['wallet']
+      });
+
+      return {
+        transactions,
+        pagination: {
+          total,
+          skip,
+          limit
+        }
+      };
+    } catch (error) {
+      throw new BaseException(
+        'Failed to fetch transactions',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'TRANSACTIONS_FETCH_ERROR',
+        { error: error.message }
+      );
+    }
   }
 
   async getAllTransactions(walletId: string) {
