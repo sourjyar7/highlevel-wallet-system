@@ -1,197 +1,125 @@
-# Backend API Service
+# Digital Wallet API
 
-A robust backend service built with NestJS framework providing RESTful APIs for [brief description of what your service does].
+A NestJS-based digital wallet service that handles wallet management and transactions.
 
-## Table of Contents
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Running the Application](#running-the-application)
-- [Environment Variables](#environment-variables)
-- [API Documentation](#api-documentation)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Future Improvements](#future-improvements)
+## Running the Application
 
-## Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-- PostgreSQL (or your database)
-- Redis (if using caching)
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone [your-repo-url]
-cd [project-directory]
-```
-
-2. Install dependencies:
+1. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+2. Set up environment variables:
 ```bash
 cp .env.example .env
+# Update the .env file with your configuration
 ```
 
-## Running the Application
-
-### Development Mode
+3. Run the application:
 ```bash
-# Regular development mode
-npm run start
-
-# Watch mode (recommended for development)
+# Development mode
 npm run start:dev
-```
 
-### Production Mode
-```bash
-# Build the application
+# Production mode
 npm run build
-
-# Start production server
 npm run start:prod
 ```
 
-## Environment Variables
+## API Endpoints
 
-Create a `.env` file in the root directory with the following variables:
+### Wallet Operations
 
-```env
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-DB_DATABASE=your_database
-
-# JWT Configuration
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRATION=24h
-```
-
-## API Documentation
-
-### Authentication
-
-#### Login
+#### Create Wallet
 ```http
-POST /api/auth/login
+POST /wallet/setup
 ```
-
-Request:
 ```json
 {
-  "email": "user@example.com",
-  "password": "password123"
+  "name": "Main Wallet",
+  "balance": 1000,
+  "currency": "USD"
 }
 ```
 
-Response:
+#### Get Single Wallet
+```http
+GET /wallet/:id
+```
+
+#### Get All Wallets
+```http
+GET /wallet
+```
+
+#### Update Wallet Status
+```http
+PATCH /wallet/:id/status
+```
 ```json
 {
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "name": "John Doe"
-  }
+  "status": "ACTIVE" // ACTIVE, FROZEN, or CLOSED
 }
 ```
 
-[Add more API endpoints documentation following the same pattern]
-
-## Testing
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
+#### Delete Wallet
+```http
+DELETE /wallet/:id
 ```
 
-## Deployment
+### Transaction Operations
 
-### Using Docker
-
-1. Build the Docker image:
-```bash
-docker build -t your-app-name .
+#### Create Transaction
+```http
+POST /transact/:walletId
+```
+```json
+{
+  "amount": 100,
+  "type": "CREDIT", // or DEBIT
+  "description": "Payment for services"
+}
 ```
 
-2. Run the container:
-```bash
-docker run -p 3000:3000 your-app-name
+#### Get Transactions
+```http
+GET /transactions?walletId=123&skip=0&limit=10&sort=createdAt&order=DESC
 ```
 
-### Traditional Deployment
+#### Export Transactions
+```http
+GET /transactions/export?walletId=123
+```
+Returns a CSV file of all transactions for the specified wallet.
 
-1. Build the application:
-```bash
-npm run build
+#### Delete Transaction
+```http
+DELETE /transactions/:id
 ```
 
-2. Start the production server:
-```bash
-npm run start:prod
+#### Delete All Wallet Transactions
+```http
+DELETE /transactions/wallet/:walletId
 ```
 
-## Future Improvements
+## TODOs for Improvement
 
-### Security Enhancements
+### Critical
+- [ ] Add authentication and authorization
+- [ ] Implement input validation and sanitization
+- [ ] Add transaction rollback mechanism
 - [ ] Implement rate limiting
-- [ ] Add request validation middleware
-- [ ] Set up security headers (helmet)
-- [ ] Implement API key authentication for external services
-- [ ] Add request logging and monitoring
+- [ ] Add request logging
 
-### Performance Optimizations
-- [ ] Implement caching strategy
-- [ ] Add database query optimization
-- [ ] Set up connection pooling
-- [ ] Implement horizontal scaling support
+### Important
+- [ ] Add database indexing for better performance
+- [ ] Implement caching for frequently accessed data
+- [ ] Add comprehensive error handling
+- [ ] Set up automated testing
+- [ ] Add API documentation using Swagger
 
-### Code Quality
-- [ ] Add comprehensive unit tests
-- [ ] Implement E2E tests for critical flows
-- [ ] Set up automated code quality checks
-- [ ] Add API documentation using Swagger/OpenAPI
-- [ ] Implement proper error handling and logging
-
-### DevOps
-- [ ] Set up CI/CD pipeline
-- [ ] Implement automated deployment
-- [ ] Add monitoring and alerting
-- [ ] Set up backup strategy
-- [ ] Implement containerization for all services
-
-### Features
-- [ ] Add user management system
-- [ ] Implement role-based access control
-- [ ] Add email notification service
-- [ ] Implement file upload functionality
+### Nice to Have
+- [ ] Add support for multiple currencies
+- [ ] Implement transaction notifications
 - [ ] Add audit logging
-
-## Contributing
-
-[Add contribution guidelines if it's an open-source project]
-
-## License
-
-[Add your license information]
-
-## Support
-
-[Add support information and contact details]
+- [ ] Create admin dashboard
+- [ ] Add analytics and reporting features
